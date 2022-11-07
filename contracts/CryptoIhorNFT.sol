@@ -43,14 +43,17 @@ contract CryptoIhorNFT is ERC721, Ownable {
   }
 
   function mint(uint256 _quantity) public payable {
+    uint256 mints = walletMints[msg.sender];
+
     require(isPublicMintEnabled, 'Minting not enabled');
     require(msg.value == _quantity * mintPrice, 'Wrong mint value');
     require(totalSupply + _quantity <= maxSupply, 'Sold out');
-    require(walletMints[msg.sender] + _quantity <= maxPerWallet, 'Exceed max mints');
+    require(mints + _quantity <= maxPerWallet, 'Exceed max mints');
 
     for (uint256 i = 0; i < _quantity; i++) {
       uint256 newTokenId = totalSupply + 1;
       totalSupply++;
+      walletMints[msg.sender] = mints + 1;
       _safeMint(msg.sender, newTokenId);
     }
   }
